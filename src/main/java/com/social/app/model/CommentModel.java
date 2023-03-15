@@ -15,8 +15,8 @@ public class CommentModel {
     @Id
     @MongoId
     private String id;
-    private String post_id;
-    private String user_id;
-    private String parent_id;
+    private String postId;
+    private String userId;
+    private String parentId;
     private String description;
 }
