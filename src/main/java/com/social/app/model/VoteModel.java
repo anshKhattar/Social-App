@@ -16,7 +16,7 @@ public class VoteModel {
     @Id
     @MongoId
     private String id;
-    private VoteTypeEnum vote_type;
-    private String post_id;
-    private String user_id;
+    private VoteTypeEnum voteType;
+    private String postId;
+    private String userId;
 }

@@ -17,8 +17,8 @@ public class PostModel {
     private String id;
     private String title;
     private String description;
-    private String content_id;
-    private boolean is_published;
-    private String user_id;
+    private String contentId;
+    private boolean isPublished;
+    private String userId;
 
 }

@@ -1,5 +1,6 @@
 package com.social.app.model;
 
+import com.social.app.enums.ContentTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,6 @@ public class ContentModel {
     @Id
     @MongoId
     private String id;
-    private String user_id;
+    private ContentTypeEnum type;
     private String link;
 }
