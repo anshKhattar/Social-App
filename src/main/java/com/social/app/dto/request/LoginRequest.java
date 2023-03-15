@@ -1,4 +1,4 @@
-package com.social.app.model.request;
+package com.social.app.dto.request;
 
 public class LoginRequest {
 

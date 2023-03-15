@@ -1,4 +1,4 @@
-package com.social.app.model.request;
+package com.social.app.dto.request;
 
 import com.social.app.model.ERole;
 import lombok.AllArgsConstructor;

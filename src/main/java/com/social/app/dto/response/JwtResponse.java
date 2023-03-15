@@ -1,4 +1,4 @@
-package com.social.app.model.response;
+package com.social.app.dto.response;
 
 import java.util.List;
 
