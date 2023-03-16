@@ -1,6 +1,7 @@
 package com.social.app.model;
 
 
+import com.social.app.enums.RoleTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Role {
     @Id
     private String id;
-    private ERole name;
+    private RoleTypeEnum name;
 
 }

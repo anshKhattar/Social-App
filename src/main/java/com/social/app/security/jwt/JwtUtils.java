@@ -1,6 +1,6 @@
 package com.social.app.security.jwt;
 
-import com.social.app.service.UserDetailsImpl;
+import com.social.app.model.User;
 import io.jsonwebtoken.*;
 
 import java.security.Key;
@@ -26,7 +26,7 @@ public class JwtUtils {
 
     public String generateJwtToken(Authentication authentication) {
 
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        User userPrincipal = (User) authentication.getPrincipal();
         // System.out.println(jwtExpirationMs+" "+jwtSecret);
 
         return Jwts.builder()
