@@ -1,6 +1,9 @@
 package com.social.app.helpers;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Singleton;
+import com.cloudinary.SingletonManager;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,15 +14,15 @@ import java.util.Map;
 
 @Service
 public class CloudinaryService {
-    private final Cloudinary cloudinary;
-
+    private Cloudinary cloudinary;
     @Value("${cloudinary.CLOUD_NAME}")
     private String CLOUD_NAME;
     @Value("${cloudinary.API_KEY}")
     private String API_KEY;
     @Value("${cloudinary.API_SECRET}")
     private String API_SECRET;
-    public CloudinaryService() {
+    @PostConstruct
+    public void initialize(){
         Map config = new HashMap();
         config.put("cloud_name", CLOUD_NAME);
         config.put("api_key", API_KEY);
@@ -29,9 +32,7 @@ public class CloudinaryService {
     public String upload(MultipartFile file) {
             try {
                 Map uploadResult = cloudinary.uploader().upload(file.getBytes(),Map.of());
-                System.out.println(uploadResult);
                 String url = uploadResult.get("secure_url").toString();
-                System.out.println(url);
                 return url;
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -41,9 +42,9 @@ public class CloudinaryService {
     private String getPublicIdFromUrl(String secureUrl){
         String[] urlParts =  secureUrl.split("/");
         String fileName =  urlParts[urlParts.length-1];
-        return fileName.split(".")[0];
+        return fileName.split("[.]")[0];
     }
-    public void deleteByUrl(String secureUrl){
+    public void deleteContentByUrl(String secureUrl){
         try {
             cloudinary.uploader().destroy(
                     getPublicIdFromUrl(secureUrl),
