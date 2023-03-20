@@ -5,9 +5,11 @@ import com.social.app.dto.PostResponseDTO;
 import com.social.app.enums.VoteTypeEnum;
 import com.social.app.model.ContentModel;
 import com.social.app.model.PostModel;
+import com.social.app.model.VoteModel;
 import com.social.app.repository.PostRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,16 +19,19 @@ public class PostService {
     private final PostRepo postRepo;
     private final  VoteService voteService;
     private final ContentService contentService;
+    private final CommentService commentService;
 
     public List<PostModel> getAllPosts() {
         return postRepo.findAll();
     }
 
-    public PostModel createPost(PostCreateDTO newPostDTO){
+    @Transactional
+    public PostModel createPost(PostCreateDTO newPostDTO,String userId){
 
         PostModel newPost = PostModel.builder()
                 .title(newPostDTO.getTitle())
                 .description(newPostDTO.getDescription())
+                .userId(userId)
                 .build();
 
         if(newPostDTO.getContent() != null){
@@ -37,7 +42,6 @@ public class PostService {
             ContentModel dbContent = contentService.createContent(newContent);
             newPost.setContentId(dbContent.getId());
         }
-
         return postRepo.save(newPost);
     }
 
@@ -50,7 +54,10 @@ public class PostService {
         PostResponseDTO resPost = PostResponseDTO.builder()
                 .id(postModel.getId())
                 .title(postModel.getTitle())
-                .description(postModel.getDescription()).build();
+                .userId(postModel.getUserId())
+                .description(postModel.getDescription())
+                .votes(voteService.getVoteCountByPost(postModel.getId()))
+                .build();
 
         if(postModel.getContentId() != null){
             ContentModel dbContent = contentService.getContentById(postModel.getContentId());
@@ -59,17 +66,41 @@ public class PostService {
         }
         return resPost;
     }
-    public void votePost(String postId, VoteTypeEnum voteType){
-        //if vote does not exist for post&user create
-        //else if exist and type is same then delete
-        //or else exist and type is different update
+    public String votePost(String postId,String userId, VoteTypeEnum voteType){
+        VoteModel dbVote =voteService.getVoteByPostIdAndUserId(postId, userId);
+        if(dbVote == null) {
+            VoteModel newVote = VoteModel.builder()
+                    .voteType(voteType)
+                    .userId(userId)
+                    .postId(postId)
+                    .build();
+             voteService.createVote(newVote);
+             return "Vote Created";
+        }
+        if(dbVote.getVoteType() == voteType){
+            voteService.deleteVote(dbVote.getId());
+            return "Vote Removed";
+        }else{
+            voteService.updateVote(dbVote.getId(), voteType);
+            return "Vote Updated";
+        }
 
-
-//        if(voteService.getVotesByPostId(id) == null)
-//            return voteService.createVote()
     }
+@Transactional
+    public void deletePostById(String postId,String userId) {
+        PostModel dbPost = postRepo.findByIdAndUserId(postId, userId).get();
 
-    public void deletePostById(String postId) {
-        postRepo.deleteById(postId);
+        commentService.deleteAllByPostId(dbPost.getId());
+        voteService.deleteAllByPostId(dbPost.getId());
+        if(dbPost.getContentId() != null)
+            contentService.deleteById(dbPost.getContentId());
+
+        postRepo.deleteById(dbPost.getId());
+    }
+    public String changePublishState(String postId,String userId, boolean isPublished) {
+        PostModel dbPost = postRepo.findByIdAndUserId(postId, userId).get();
+        dbPost.setPublished(isPublished);
+        postRepo.save(dbPost);
+        return "Post updated";
     }
 }

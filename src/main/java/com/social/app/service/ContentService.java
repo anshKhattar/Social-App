@@ -5,6 +5,7 @@ import com.social.app.model.ContentModel;
 import com.social.app.repository.ContentRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -22,5 +23,13 @@ public class ContentService {
     }
     public ContentModel getContentById(String id){
         return contentRepo.findById(id).get();
+    }
+
+    @Transactional
+    public void deleteById(String id){
+        cloudinaryService.deleteContentByUrl(
+                getContentById(id).getLink()
+        );
+        contentRepo.deleteById(id);
     }
 }

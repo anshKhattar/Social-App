@@ -14,4 +14,5 @@ public class PostResponseDTO{
     private String contentLink;
     private ContentTypeEnum contentType;
     private String userId;
+    private VoteCountDTO votes;
 }

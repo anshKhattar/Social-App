@@ -1,22 +1,34 @@
 package com.social.app.service;
 
+import com.social.app.dto.VoteCountDTO;
 import com.social.app.enums.VoteTypeEnum;
 import com.social.app.model.VoteModel;
 import com.social.app.repository.VoteRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class VoteService {
     private final VoteRepo voteRepo;
 
-//    public List<VoteModel> getVotesByPostId(String postId){
-//        return voteRepo.findByPost_id(postId);
-//    }
-//    public VoteModel getVoteByUserAndPost(String userId, String postId){
-//        return voteRepo.findByPost_idAndAndUser_id(postId,userId).get();
-//    }
+    public List<VoteModel> getVotesByPostId(String postId){
+        return voteRepo.findAllByPostId(postId);
+    }
+    public VoteCountDTO getVoteCountByPost(String postId){
+        Number likeCount = voteRepo.countAllByPostIdAndVoteType(postId, VoteTypeEnum.LIKE);
+        Number dislikeCount = voteRepo.countAllByPostIdAndVoteType(postId, VoteTypeEnum.DISLIKE);
+        return VoteCountDTO.builder()
+                .likeCount(likeCount)
+                .dislikeCount(dislikeCount)
+                .build();
+    }
+
+    public VoteModel getVoteByPostIdAndUserId(String postId, String userId){
+        return voteRepo.findAllByPostIdAndUserId(postId,userId).orElse(null);
+    }
     public VoteModel createVote(VoteModel newVote){
         return voteRepo.save(newVote);
     }
@@ -32,6 +44,9 @@ public class VoteService {
         VoteModel dbVote = getVoteById(voteId);
         dbVote.setVoteType(voteType);
         return voteRepo.save(dbVote);
+    }
+    public void deleteAllByPostId(String postId){
+        voteRepo.deleteAllByPostId(postId);
     }
 
 }
