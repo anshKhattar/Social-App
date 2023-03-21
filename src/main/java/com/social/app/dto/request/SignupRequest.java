@@ -1,10 +1,6 @@
 package com.social.app.dto.request;
 
-import com.social.app.enums.RoleTypeEnum;
 import lombok.Data;
-
-import java.util.List;
-
 @Data
 
 public class SignupRequest {
@@ -14,5 +10,5 @@ public class SignupRequest {
     private int age;
     private String gender;
     private String password;
-    private String profilePic;
+    // private String profilePic;
 }

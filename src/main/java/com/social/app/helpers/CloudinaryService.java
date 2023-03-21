@@ -28,6 +28,7 @@ public class CloudinaryService {
         config.put("api_key", API_KEY);
         config.put("api_secret", API_SECRET);
         this.cloudinary = new Cloudinary(config);
+//        System.out.println(CLOUD_NAME +" "+API_KEY +" "+API_SECRET);
     }
     public String upload(MultipartFile file) {
             try {
