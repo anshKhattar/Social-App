@@ -20,6 +20,7 @@ public class PostService {
     private final  VoteService voteService;
     private final ContentService contentService;
     private final CommentService commentService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     public List<PostModel> getAllPosts() {
         return postRepo.findAll();
@@ -29,7 +30,6 @@ public class PostService {
     public PostModel createPost(PostCreateDTO newPostDTO,String userId){
 
         PostModel newPost = PostModel.builder()
-                .title(newPostDTO.getTitle())
                 .description(newPostDTO.getDescription())
                 .userId(userId)
                 .build();
@@ -53,8 +53,7 @@ public class PostService {
 
         PostResponseDTO resPost = PostResponseDTO.builder()
                 .id(postModel.getId())
-                .title(postModel.getTitle())
-                .userId(postModel.getUserId())
+                .user(userDetailsService.loadUserByUserId(postModel.getUserId()))
                 .description(postModel.getDescription())
                 .votes(voteService.getVoteCountByPost(postModel.getId()))
                 .build();

@@ -27,6 +27,9 @@ public class CommentService {
     public List<CommentModel> getAllCommentsByPostId(String postId){
         return commentRepo.findAllByPostId(postId);
     }
+    public void deleteAllByPostId(String postId){
+        commentRepo.deleteAllByPostId(postId);
+    }
 
 
 }

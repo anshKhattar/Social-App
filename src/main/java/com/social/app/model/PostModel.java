@@ -17,7 +17,6 @@ public class PostModel {
     @Id
     @MongoId
     private String id;
-    private String title;
     private String description;
     private String contentId;
     private boolean isPublished;

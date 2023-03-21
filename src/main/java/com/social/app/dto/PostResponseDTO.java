@@ -1,6 +1,7 @@
 package com.social.app.dto;
 
 import com.social.app.enums.ContentTypeEnum;
+import com.social.app.model.UserDetails;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,10 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 public class PostResponseDTO{
     private String id;
-    private String title;
     private String description;
     private String contentLink;
     private ContentTypeEnum contentType;
-    private String userId;
+    private UserDetails user;
     private VoteCountDTO votes;
 }
