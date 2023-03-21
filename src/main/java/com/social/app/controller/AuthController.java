@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -74,7 +74,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
-        System.out.println(signUpRequest);
+        // System.out.println(signUpRequest);
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
@@ -130,8 +130,12 @@ public class AuthController {
 
         User dbUser = userRepository.save(user);
 
-        UserDetails userDetails = new UserDetails(signUpRequest.getName(),signUpRequest.getAge(),
-                signUpRequest.getGender(),signUpRequest.getProfilePic(), dbUser.getId());
+        UserDetails userDetails = new UserDetails(
+                signUpRequest.getName(),
+                signUpRequest.getAge(),
+                signUpRequest.getGender(),
+                // signUpRequest.getProfilePic(),
+                dbUser.getId());
         userDetailsRepository.save(userDetails);
 
         return ResponseEntity.ok(new MessageResponse("user registered successfully!"));
