@@ -15,4 +15,5 @@ public class PostResponseDTO{
     private ContentTypeEnum contentType;
     private UserDetails user;
     private VoteCountDTO votes;
+    private boolean isPublished;
 }

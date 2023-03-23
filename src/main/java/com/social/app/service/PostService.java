@@ -23,7 +23,7 @@ public class PostService {
     private final UserDetailsServiceImpl userDetailsService;
 
     public List<PostModel> getAllPosts() {
-        return postRepo.findAll();
+        return postRepo.findAllPublishedPost();
     }
 
     @Transactional
@@ -45,17 +45,23 @@ public class PostService {
         return postRepo.save(newPost);
     }
 
-    public PostModel getPostById(String postId) {
-        return postRepo.findById(postId).get();
+    public PostModel getPostById(String postId,String loggedInUserId) {
+       PostModel dbPost = postRepo.findByIdAndUserId(postId, loggedInUserId).orElse(null);
+        if(dbPost != null)
+            return dbPost;
+        else
+            return postRepo.findByIdAndIsPublished(postId).orElse(null);
     }
 
     public PostResponseDTO postModelToResponse(PostModel postModel){
+        if(postModel == null) return null;
 
         PostResponseDTO resPost = PostResponseDTO.builder()
                 .id(postModel.getId())
                 .user(userDetailsService.loadUserByUserId(postModel.getUserId()))
                 .description(postModel.getDescription())
                 .votes(voteService.getVoteCountByPost(postModel.getId()))
+                .isPublished(postModel.isPublished())
                 .build();
 
         if(postModel.getContentId() != null){
@@ -102,4 +108,12 @@ public class PostService {
         postRepo.save(dbPost);
         return "Post updated";
     }
+
+    public List<PostModel> getPostsByUserId(String userId,String loggedInUserId) {
+        if(userId.equals(loggedInUserId))
+            return postRepo.findByUserId(userId);
+        else
+            return postRepo.findByUserIdAndIsPublished(userId);
+    }
+
 }

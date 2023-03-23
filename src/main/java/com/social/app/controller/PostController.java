@@ -39,11 +39,20 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
-    public PostResponseDTO getPostById(@PathVariable String postId){
-        PostModel dbPost =  postService.getPostById(postId);
+    public PostResponseDTO getPostById(@PathVariable String postId,Authentication authentication){
+        User loggedInUser = (User) authentication.getPrincipal();
+        PostModel dbPost =  postService.getPostById(postId,loggedInUser.getId());
         return postService.postModelToResponse(dbPost);
     }
 
+    @GetMapping("/user/{userId}")
+    public List<PostResponseDTO> getPostsByUserId(@PathVariable String userId,Authentication authentication){
+        User loggedInUser = (User) authentication.getPrincipal();
+        List<PostModel> posts = postService.getPostsByUserId(userId,loggedInUser.getId());
+        return posts.stream().map(
+                dbPost->postService.postModelToResponse(dbPost)
+        ).collect(Collectors.toList());
+    }
     @DeleteMapping("/{postId}")
     public String deletePostById(@PathVariable String postId, Authentication authentication){
         User user = (User) authentication.getPrincipal();
