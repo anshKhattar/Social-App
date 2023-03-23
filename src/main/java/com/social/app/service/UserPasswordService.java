@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 
 @Service
@@ -33,28 +35,41 @@ public class UserPasswordService {
     private JwtUtils jwtUtils;
     @Autowired
     PasswordEncoder encoder;
-    public void updatePassword(String userId, String forgetPassword){
+
+
+    private String forgetPasswordURL = "/api/auth/resetForgetPassword?token=";
+    private String resetPasswordURL = "api/auth/resetPassword?token=";
+    public void updateForgetPassword(String userId, String forgetPassword){
             User dbUser = userDetailsService.getUserByUserId(userId);
             dbUser.setPassword(encoder.encode(forgetPassword));
             userRepository.save(dbUser);
     }
     public void forgetPassword(String email) throws MessagingException, UnsupportedEncodingException {
-        sendMail(email);
+        sendMail(email,forgetPasswordURL);
     }
 
-//    public String resetPassword(){
-//
-//        return "Password";
-//    }
+    public String resetPassword(Map<String,String> body, User user){
+        String msg;
+        System.out.println(user);
+        if(encoder.matches(body.get("oldPassword"), user.getPassword())){
+            user.setPassword(encoder.encode(body.get("newPassword")));
+            userRepository.save(user);
+            msg = "Password reset successfully.";
+        }
+        else {
+            msg = "The old password that you entered is invalid.";
+        }
+        return msg;
+    }
 
-    public void sendMail(String email) throws MessagingException, UnsupportedEncodingException {
+    public void sendMail(String email, String mainURL) throws MessagingException, UnsupportedEncodingException {
         User user = userDetailsService.loadUserByUserEmail(email);
 
         String toAddress = email;
         String fromAddress = senderEmailAddress;
         String senderName = "Tekion Social App";
         String subject = "Please reset you password your registration";
-        String content = "Dear "+user.getName()+",<br>"
+        String content = "Dear " + user.getName() + ",<br>"
                          +"Please click the link below to reset your password:<br>"
                          + "<h3><a href=\"[[URL]]\" target=\"_self\">RESET</a></h3>"
                          + "Thank you,<br>"
@@ -68,7 +83,7 @@ public class UserPasswordService {
         helper.setSubject(subject);
 
         String verifyURL =
-                siteURL + "/api/auth/resetPassword?token=" + jwtUtils.generateForgetPasswordToken(user.getId());
+                siteURL + mainURL + jwtUtils.generateForgetPasswordToken(user.getId());
 
         content = content.replace("[[URL]]", verifyURL);
 

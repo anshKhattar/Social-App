@@ -173,11 +173,20 @@ public class AuthController {
         return msg;
     }
 
-    @PostMapping ("/resetPassword")
-    public String resetPassword(@RequestParam(value="token") String token, @RequestBody Map<String, String> body){
+    @PostMapping ("/resetForgetPassword")
+    public String resetForgetPassword(@RequestParam(value="token") String token, @RequestBody Map<String, String> body){
         String userId = jwtUtils.getUserNameFromJwtToken(token,jwtForgetSecret);
-        System.out.println(token+" "+body.get("newPassword"));
-        userPasswordService.updatePassword(userId, body.get("newPassword"));
+        // System.out.println(token+" "+body.get("newPassword"));
+        userPasswordService.updateForgetPassword(userId, body.get("newPassword"));
         return "Password reset successfully.";
     }
+
+
+    @PostMapping("/resetPassword")
+    public String resetPassword( @RequestBody Map<String, String> body, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return userPasswordService.resetPassword(body,user);
+
+    }
+
 }

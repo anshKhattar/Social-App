@@ -73,8 +73,9 @@ public class WebSecurityConfig {
                  .csrf().disable()
             .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeRequests().requestMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated();
+            .authorizeRequests().requestMatchers("/api/auth/**").permitAll().and()
+                 .authorizeRequests().requestMatchers("/api/auth/resetPassword").authenticated()
+             .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());
 
