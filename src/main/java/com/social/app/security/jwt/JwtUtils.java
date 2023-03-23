@@ -18,36 +18,57 @@ import org.springframework.stereotype.Component;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${JWT_SECRET}")
-    private String jwtSecret;
+    @Value("${JWT_LOGIN_SECRET}")
+    private String jwtLoginSecret;
+    @Value("${JWT_FORGET_SECRET}")
+    private String jwtForgetSecret;
+    @Value("${JWT_VERIFY_SECRET}")
+    private String jwtVerifySecret;
+    @Value("${JWT_LOGIN_EXPIRATION_IN_MS}")
+    private int jwtLoginExpirationMs;
+    @Value("${JWT_FORGET_EXPIRATION_IN_MS}")
+    private int jwtForgetExpirationMs;
+    @Value("${JWT_VERIFY_EXPIRATION_IN_MS}")
+    private int jwtVerifyExpirationMs;
 
-    @Value("${JWT_EXPIRATION_IN_MS}")
-    private int jwtExpirationMs;
-
-    public String generateJwtToken(Authentication authentication) {
-
+    public String generateLoginToken(Authentication authentication) {
         User userPrincipal = (User) authentication.getPrincipal();
-        // System.out.println(jwtExpirationMs+" "+jwtSecret);
+        return generateToken(userPrincipal.getUsername(),jwtLoginSecret, jwtLoginExpirationMs);
+    }
 
+    public String generateVerifyToken(String userId) {
+//        System.out.println(jwtVerifySecret+" "+jwtVerifyExpirationMs);
+        return generateToken(userId,jwtVerifySecret, jwtVerifyExpirationMs);
+    }
+
+    public String generateForgetPasswordToken(String userId){
+        return generateToken(userId,jwtForgetSecret,jwtForgetExpirationMs);
+    }
+
+
+    private String generateToken(String subject, String secretKey, int expirationTimeInMs){
         return Jwts.builder()
-                   .setSubject((userPrincipal.getUsername()))
+                   .setSubject(subject)
                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                   .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                   .signWith(getSignInKey(),SignatureAlgorithm.HS256)
+                   .setExpiration(new Date(System.currentTimeMillis() + expirationTimeInMs))
+                   .signWith(getSignInKey(secretKey),SignatureAlgorithm.HS256)
                    .compact();
     }
-    private Key getSignInKey(){
+
+
+
+    private Key getSignInKey(String jwtSecret){
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    public String getUserNameFromJwtToken(String token, String key) {
+        return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(jwtLoginSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
             logger.error("Invalid JWT signature: {}", e.getMessage());

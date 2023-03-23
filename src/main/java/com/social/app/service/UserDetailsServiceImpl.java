@@ -29,9 +29,28 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserDetails loadUserByUserId(String userId){
-        UserDetails userDetails = userDetailsRepository.findByUserId(userId).orElse(null);
+        UserDetails userDetails = userDetailsRepository.findByUserId(userId);
 
         return userDetails;
     }
 
+
+    public User getUserByUserId(String userId){
+        User user = userRepository.findById(userId).orElse(null);
+        return user;
+    }
+
+    public User loadUserByUserEmail(String email){
+        User user = userRepository.findByEmail(email);
+
+        return user;
+    }
+
+
+
+    public void saveEnableUser(String userId){
+        UserDetails userDetails = loadUserByUserId(userId);
+        userDetails.setEnabled(true);
+        userDetailsRepository.save(userDetails);
+    }
 }
