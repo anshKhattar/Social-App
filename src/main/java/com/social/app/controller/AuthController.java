@@ -144,7 +144,7 @@ public class AuthController {
         userVerificationService.sendVerificationEmail(dbUser);
 
 
-        return ResponseEntity.ok(new MessageResponse("user registered successfully! \n email for verification sent " +
+        return ResponseEntity.ok(new MessageResponse("user registered successfully! email for verification sent " +
                                                      "to the mentioned email please validate within 15 minutes."));
     }
 
