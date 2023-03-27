@@ -1,7 +1,9 @@
 package com.social.app.service;
 
+import com.social.app.dto.UserUpdateDTO;
 import com.social.app.dto.response.UserDetailsResponseDTO;
 import com.social.app.enums.RoleTypeEnum;
+import com.social.app.helpers.CloudinaryService;
 import com.social.app.model.User;
 import com.social.app.model.UserDetails;
 import com.social.app.repository.UserDetailsRepository;
@@ -20,6 +22,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     UserDetailsRepository userDetailsRepository;
+    @Autowired
+    CloudinaryService cloudinaryService;
 
     @Override
     @Transactional
@@ -57,20 +61,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return user;
     }
 
-    public UserDetails updateUser(String userId, UserDetailsResponseDTO userDetailsResponseDTO){
+    public UserDetails updateUser(String userId, UserUpdateDTO userUpdateDTO){
         UserDetails dbUserDetails = userDetailsRepository.findByUserId(userId);
-        if (userDetailsResponseDTO.getAge() != 0){
-            dbUserDetails.setAge(userDetailsResponseDTO.getAge());
+        if (userUpdateDTO.getAge() != 0){
+            dbUserDetails.setAge(userUpdateDTO.getAge());
         }
-        if (userDetailsResponseDTO.getName() != null){
-            dbUserDetails.setName(userDetailsResponseDTO.getName());
+        if (userUpdateDTO.getName() != null){
+            dbUserDetails.setName(userUpdateDTO.getName());
         }
-        if (userDetailsResponseDTO.getGender() != null){
-            dbUserDetails.setGender(userDetailsResponseDTO.getGender());
+        if (userUpdateDTO.getGender() != null){
+            dbUserDetails.setGender(userUpdateDTO.getGender());
         }
-        if (userDetailsResponseDTO.getProfilePic() != null){
-            dbUserDetails.setProfilePic(userDetailsResponseDTO.getProfilePic());
+
+        if (userUpdateDTO.getProfilePic() != null){
+            String updateProfilePicURL = cloudinaryService.upload(userUpdateDTO.getProfilePic());
+            dbUserDetails.setProfilePic(updateProfilePicURL);
         }
+
         userDetailsRepository.save(dbUserDetails);
         return dbUserDetails;
     }

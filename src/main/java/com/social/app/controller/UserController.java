@@ -1,5 +1,6 @@
 package com.social.app.controller;
 
+import com.social.app.dto.UserUpdateDTO;
 import com.social.app.dto.response.MessageResponse;
 import com.social.app.dto.response.UserDetailsResponseDTO;
 import com.social.app.model.User;
@@ -24,10 +25,10 @@ public class UserController {
     }
 
     @PutMapping ("user/updateProfile")
-    public UserDetails updateUserProfile(@RequestBody UserDetailsResponseDTO userDetailsResponseDTO,
+    public UserDetails updateUserProfile(@ModelAttribute UserUpdateDTO userUpdateDTO,
                                          Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        return userDetailsService.updateUser(user.getId(),userDetailsResponseDTO);
+        return userDetailsService.updateUser(user.getId(),userUpdateDTO);
     }
 
 }

@@ -5,6 +5,8 @@ import com.social.app.dto.request.SignupRequest;
 import com.social.app.dto.response.JwtResponse;
 import com.social.app.dto.response.MessageResponse;
 import com.social.app.enums.RoleTypeEnum;
+import com.social.app.helpers.CloudinaryService;
+import com.social.app.model.ContentModel;
 import com.social.app.model.User;
 import com.social.app.model.UserDetails;
 import com.social.app.repository.UserDetailsRepository;
@@ -39,6 +41,9 @@ public class UserAuthService {
     PasswordEncoder encoder;
     @Autowired
     UserDetailsRepository userDetailsRepository;
+
+    @Autowired
+    CloudinaryService cloudinaryService;
     @Autowired
     UserVerificationService userVerificationService;
     public ResponseEntity<?> userLogin(LoginRequest loginRequest){
@@ -109,11 +114,13 @@ public class UserAuthService {
 
         User dbUser = userRepository.save(user);
 
+        String profilePic = cloudinaryService.upload(signUpRequest.getProfilePic());
+
         UserDetails userDetails = new UserDetails(
                 signUpRequest.getName(),
                 signUpRequest.getAge(),
                 signUpRequest.getGender(),
-                signUpRequest.getProfilePic(),
+                profilePic,
                 dbUser.getId());
         userDetailsRepository.save(userDetails);
 

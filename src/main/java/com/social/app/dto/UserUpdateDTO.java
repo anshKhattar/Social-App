@@ -1,16 +1,19 @@
-package com.social.app.dto.request;
+package com.social.app.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserUpdateDTO {
 
-public class SignupRequest {
+    private String id;
     private String name;
-    private String username;
-    private String email;
     private int age;
     private String gender;
-    private String password;
     private MultipartFile profilePic;
 }
+
