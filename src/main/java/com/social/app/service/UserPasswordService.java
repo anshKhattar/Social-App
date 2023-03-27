@@ -39,10 +39,11 @@ public class UserPasswordService {
 
     private String forgetPasswordURL = "/api/auth/resetForgetPassword?token=";
     private String resetPasswordURL = "api/auth/resetPassword?token=";
-    public void updateForgetPassword(String userId, String forgetPassword){
+    public String updateForgetPassword(String userId, String forgetPassword){
             User dbUser = userDetailsService.getUserByUserId(userId);
             dbUser.setPassword(encoder.encode(forgetPassword));
             userRepository.save(dbUser);
+            return "Password reset successfully.";
     }
     public void forgetPassword(String email) throws MessagingException, UnsupportedEncodingException {
         sendMail(email,forgetPasswordURL);

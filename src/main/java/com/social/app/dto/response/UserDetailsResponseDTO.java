@@ -13,5 +13,5 @@ public class UserDetailsResponseDTO {
     private String name;
     private int age;
     private String gender;
-    private String profileImage;
+    private String profilePic;
 }

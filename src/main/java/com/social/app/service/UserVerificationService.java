@@ -65,8 +65,10 @@ public class UserVerificationService {
     }
 
 
-    public void enableUser(String userId){
+    public String enableUser(String userId){
         userDetailsServiceImpl.saveEnableUser(userId);
+        return "Successfully validated";
+
     }
 
 }

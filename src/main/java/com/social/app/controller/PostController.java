@@ -50,7 +50,7 @@ public class PostController {
     @PostMapping("/")
     public PostResponseDTO createPost (@ModelAttribute PostCreateDTO newPost, Authentication authentication){
         User user = (User) authentication.getPrincipal();
-        PostModel dbPost =postService.createPost(newPost,user.getId());
+        PostModel dbPost = postService.createPost(newPost,user.getId());
         return postService.postModelToResponse(dbPost);
     }
     @PutMapping("/update/{postId}")

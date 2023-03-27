@@ -57,16 +57,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return user;
     }
 
-    public UserDetails updateUser(String userId, UserDetails userDetails){
+    public UserDetails updateUser(String userId, UserDetailsResponseDTO userDetailsResponseDTO){
         UserDetails dbUserDetails = userDetailsRepository.findByUserId(userId);
-        if ((Integer)userDetails.getAge() != null){
-            dbUserDetails.setAge(userDetails.getAge());
+        if (userDetailsResponseDTO.getAge() != 0){
+            dbUserDetails.setAge(userDetailsResponseDTO.getAge());
         }
-        if (userDetails.getName() != null){
-            dbUserDetails.setName(userDetails.getName());
+        if (userDetailsResponseDTO.getName() != null){
+            dbUserDetails.setName(userDetailsResponseDTO.getName());
         }
-        if (userDetails.getGender() != null){
-            dbUserDetails.setGender(userDetails.getGender());
+        if (userDetailsResponseDTO.getGender() != null){
+            dbUserDetails.setGender(userDetailsResponseDTO.getGender());
+        }
+        if (userDetailsResponseDTO.getProfilePic() != null){
+            dbUserDetails.setProfilePic(userDetailsResponseDTO.getProfilePic());
         }
         userDetailsRepository.save(dbUserDetails);
         return dbUserDetails;
