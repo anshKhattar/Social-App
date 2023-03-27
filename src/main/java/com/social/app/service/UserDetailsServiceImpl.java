@@ -1,6 +1,6 @@
 package com.social.app.service;
 
-import com.social.app.model.User;
+import com.social.app.enums.RoleTypeEnum;
 import com.social.app.model.User;
 import com.social.app.model.UserDetails;
 import com.social.app.repository.UserDetailsRepository;
@@ -31,7 +31,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUserId(String userId){
         UserDetails userDetails = userDetailsRepository.findByUserId(userId);
 
-        return userDetails;
+        UserDetails dbUserDetails = UserDetails.builder()
+                        .id(userDetails.getUserId())
+                        .name(userDetails.getName())
+                        .age(userDetails.getAge())
+                        .gender(userDetails.getGender())
+                        .build();
+        return dbUserDetails;
     }
 
 
@@ -45,6 +51,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         return user;
     }
+
+    public UserDetails updateUser(String userId, UserDetails userDetails){
+        UserDetails dbUserDetails = userDetailsRepository.findByUserId(userId);
+        if ((Integer)userDetails.getAge() != null){
+            dbUserDetails.setAge(userDetails.getAge());
+        }
+        if (userDetails.getName() != null){
+            dbUserDetails.setName(userDetails.getName());
+        }
+        if (userDetails.getGender() != null){
+            dbUserDetails.setGender(userDetails.getGender());
+        }
+        userDetailsRepository.save(dbUserDetails);
+        return dbUserDetails;
+    }
+
 
 
 
