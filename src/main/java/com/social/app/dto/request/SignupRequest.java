@@ -10,5 +10,5 @@ public class SignupRequest {
     private int age;
     private String gender;
     private String password;
-    // private String profilePic;
+    private String profilePic;
 }

@@ -135,7 +135,7 @@ public class AuthController {
                 signUpRequest.getName(),
                 signUpRequest.getAge(),
                 signUpRequest.getGender(),
-                // signUpRequest.getProfilePic(),
+                signUpRequest.getProfilePic(),
                 dbUser.getId());
         userDetailsRepository.save(userDetails);
 

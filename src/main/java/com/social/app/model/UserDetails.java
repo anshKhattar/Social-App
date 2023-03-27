@@ -18,7 +18,7 @@ public class UserDetails {
     private int age;
     private String gender;
     private boolean isEnabled;
-    // private String profilePic;
+    private String profilePic;
     private String userId;
 
     public UserDetails() {
@@ -28,13 +28,13 @@ public class UserDetails {
             String name,
             int age,
             String gender,
-            //String profilePic,
+            String profilePic,
             String userId) {
 
         this.name= name;
         this.age = age;
         this.gender = gender;
-        // this.profilePic = profilePic;
+        this.profilePic = profilePic;
         this.userId = userId;
     }
 }

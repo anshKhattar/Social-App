@@ -1,5 +1,6 @@
 package com.social.app.service;
 
+import com.social.app.dto.response.UserDetailsResponseDTO;
 import com.social.app.enums.RoleTypeEnum;
 import com.social.app.model.User;
 import com.social.app.model.UserDetails;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     UserDetailsRepository userDetailsRepository;
 
@@ -28,18 +30,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return User;
     }
 
-    public UserDetails loadUserByUserId(String userId){
+    public UserDetailsResponseDTO loadUserByUserId(String userId){
         UserDetails userDetails = userDetailsRepository.findByUserId(userId);
 
-        UserDetails dbUserDetails = UserDetails.builder()
-                        .id(userDetails.getUserId())
-                        .name(userDetails.getName())
-                        .age(userDetails.getAge())
-                        .gender(userDetails.getGender())
-                        .build();
-        return dbUserDetails;
+        return new UserDetailsResponseDTO(
+                userDetails.getUserId(),
+                userDetails.getName(),
+                userDetails.getAge(),
+                userDetails.getGender(),
+                userDetails.getProfilePic());
     }
 
+
+    public UserDetails loadUserDetailsByUserId(String userId) {
+        return userDetailsRepository.findByUserId(userId);
+    }
 
     public User getUserByUserId(String userId){
         User user = userRepository.findById(userId).orElse(null);
@@ -71,7 +76,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 
     public void saveEnableUser(String userId){
-        UserDetails userDetails = loadUserByUserId(userId);
+        UserDetails userDetails = loadUserDetailsByUserId(userId);
         userDetails.setEnabled(true);
         userDetailsRepository.save(userDetails);
     }
