@@ -116,4 +116,32 @@ public class PostService {
             return postRepo.findByUserIdAndIsPublished(userId);
     }
 
+    public PostModel updatePost(PostCreateDTO updatePost, String userId) {
+
+        PostModel dbPost  = postRepo.findByIdAndUserId(updatePost.getId(),userId).get();
+
+        if(updatePost.getDescription() != null)
+            dbPost.setDescription(updatePost.getDescription());
+
+        if(updatePost.getContent() != null && updatePost.getContentType() != null
+        ){
+            if(dbPost.getContentId() != null)
+                 contentService.deleteById(dbPost.getContentId());
+
+            ContentModel newContent = ContentModel.builder()
+                    .type(updatePost.getContentType())
+                    .link(contentService.uploadContent(updatePost.getContent()))
+                    .build();
+            ContentModel dbContent = contentService.createContent(newContent);
+            dbPost.setContentId(dbContent.getId());
+
+        }else if(updatePost.getContent() == null
+                && updatePost.getContentType() == null
+                && dbPost.getContentId() != null
+        ){
+            contentService.deleteById(dbPost.getContentId());
+            dbPost.setContentId(null);
+        }
+        return postRepo.save(dbPost);
+    }
 }

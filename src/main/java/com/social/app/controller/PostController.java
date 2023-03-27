@@ -23,12 +23,6 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/")
-    public PostResponseDTO createPost (@ModelAttribute PostCreateDTO newPost, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        PostModel dbPost =postService.createPost(newPost,user.getId());
-        return postService.postModelToResponse(dbPost);
-    }
 
     @GetMapping("/")
     public List<PostResponseDTO>  getAllPosts(){
@@ -52,6 +46,19 @@ public class PostController {
         return posts.stream().map(
                 dbPost->postService.postModelToResponse(dbPost)
         ).collect(Collectors.toList());
+    }
+    @PostMapping("/")
+    public PostResponseDTO createPost (@ModelAttribute PostCreateDTO newPost, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        PostModel dbPost =postService.createPost(newPost,user.getId());
+        return postService.postModelToResponse(dbPost);
+    }
+    @PutMapping("/update/{postId}")
+    public PostResponseDTO updatePost (@ModelAttribute PostCreateDTO updatePost,@PathVariable String postId, Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        updatePost.setId(postId);
+        PostModel dbPost = postService.updatePost(updatePost,user.getId());
+        return postService.postModelToResponse(dbPost);
     }
     @DeleteMapping("/{postId}")
     public String deletePostById(@PathVariable String postId, Authentication authentication){
