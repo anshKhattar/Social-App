@@ -3,6 +3,7 @@ package com.social.app.service;
 import com.social.app.dto.PostCreateDTO;
 import com.social.app.dto.PostResponseDTO;
 import com.social.app.enums.VoteTypeEnum;
+import com.social.app.model.CommentModel;
 import com.social.app.model.ContentModel;
 import com.social.app.model.PostModel;
 import com.social.app.model.VoteModel;
@@ -143,5 +144,21 @@ public class PostService {
             dbPost.setContentId(null);
         }
         return postRepo.save(dbPost);
+    }
+    public CommentModel createComment(CommentModel newComment, String userId){
+        PostModel dbPost = getPostById(newComment.getPostId(),userId);
+        if(dbPost == null) return null ;
+
+        if(newComment.getParentId() != null)
+            commentService.getCommentById(newComment.getParentId()).get();
+
+        newComment.setUserId(userId);
+        return commentService.createComment(newComment);
+    }
+
+    public List<CommentModel> getAllCommentsByPostId(String postId, String userId){
+        PostModel dbPost = getPostById(postId,userId);
+        if(dbPost == null) return null ;
+        return commentService.findAllByPostId(postId);
     }
 }

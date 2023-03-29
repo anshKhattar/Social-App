@@ -3,8 +3,10 @@ package com.social.app.controller;
 import com.social.app.dto.PostCreateDTO;
 import com.social.app.dto.PostResponseDTO;
 import com.social.app.enums.VoteTypeEnum;
+import com.social.app.model.CommentModel;
 import com.social.app.model.PostModel;
 import com.social.app.model.User;
+import com.social.app.service.CommentService;
 import com.social.app.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class PostController {
 
     private final PostService postService;
+    private final CommentService commentService;
 
 
     @GetMapping("/")
@@ -89,6 +92,21 @@ public class PostController {
     public String dislikePost(@PathVariable String postId,Authentication authentication){
         User user = (User) authentication.getPrincipal();
         return postService.votePost(postId,user.getId(), VoteTypeEnum.DISLIKE);
+    }
+    @GetMapping("/comment/{postId}")
+    public List<CommentModel> getCommentsByPost(@PathVariable String postId,Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return postService.getAllCommentsByPostId(postId,user.getId());
+    }
+    @PostMapping("/comment")
+    public CommentModel addComment(@RequestBody CommentModel newComment,Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        return postService.createComment(newComment,user.getId());
+    }
+    @DeleteMapping ("/comment/{commentId}")
+    public void deleteComment(@PathVariable String commentId,Authentication authentication){
+        User user = (User) authentication.getPrincipal();
+        commentService.deleteCommentById(commentId,user.getId());
     }
 
 }
