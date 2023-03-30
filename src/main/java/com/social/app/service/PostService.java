@@ -2,6 +2,7 @@ package com.social.app.service;
 
 import com.social.app.dto.PostCreateDTO;
 import com.social.app.dto.PostResponseDTO;
+import com.social.app.enums.ContentTypeEnum;
 import com.social.app.enums.VoteTypeEnum;
 import com.social.app.model.CommentModel;
 import com.social.app.model.ContentModel;
@@ -35,14 +36,16 @@ public class PostService {
                 .userId(userId)
                 .build();
 
-        if(newPostDTO.getContent() != null){
+        ContentTypeEnum contentType =  contentService.getContentType(newPostDTO.getContent());
+        if(contentType != null){
             ContentModel newContent = ContentModel.builder()
-                    .type(newPostDTO.getContentType())
+                    .type(contentType)
                     .link(contentService.uploadContent(newPostDTO.getContent()))
                     .build();
             ContentModel dbContent = contentService.createContent(newContent);
             newPost.setContentId(dbContent.getId());
         }
+
         return postRepo.save(newPost);
     }
 
@@ -124,25 +127,27 @@ public class PostService {
         if(updatePost.getDescription() != null)
             dbPost.setDescription(updatePost.getDescription());
 
-        if(updatePost.getContent() != null && updatePost.getContentType() != null
-        ){
+        if(updatePost.getContent() == null) return postRepo.save(dbPost);
+
+        ContentTypeEnum contentType =  contentService.getContentType(updatePost.getContent());
+
+        if(contentType != null){
             if(dbPost.getContentId() != null)
                  contentService.deleteById(dbPost.getContentId());
 
             ContentModel newContent = ContentModel.builder()
-                    .type(updatePost.getContentType())
+                    .type(contentType)
                     .link(contentService.uploadContent(updatePost.getContent()))
                     .build();
             ContentModel dbContent = contentService.createContent(newContent);
             dbPost.setContentId(dbContent.getId());
-
-        }else if(updatePost.getContent() == null
-                && updatePost.getContentType() == null
-                && dbPost.getContentId() != null
-        ){
-            contentService.deleteById(dbPost.getContentId());
-            dbPost.setContentId(null);
+        }else{
+            if(dbPost.getContentId() != null){
+                contentService.deleteById(dbPost.getContentId());
+                dbPost.setContentId(null);
+            }
         }
+
         return postRepo.save(dbPost);
     }
     public CommentModel createComment(CommentModel newComment, String userId){
