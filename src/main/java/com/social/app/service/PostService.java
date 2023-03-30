@@ -2,6 +2,7 @@ package com.social.app.service;
 
 import com.social.app.dto.PostCreateDTO;
 import com.social.app.dto.PostResponseDTO;
+import com.social.app.enums.ContentTypeEnum;
 import com.social.app.enums.VoteTypeEnum;
 import com.social.app.model.CommentModel;
 import com.social.app.model.ContentModel;
@@ -31,23 +32,25 @@ public class PostService {
     public PostModel createPost(PostCreateDTO newPostDTO,String userId){
 
         PostModel newPost = PostModel.builder()
-                .description(newPostDTO.getDescription())
-                .userId(userId)
-                .build();
+                                     .description(newPostDTO.getDescription())
+                                     .userId(userId)
+                                     .build();
 
-        if(newPostDTO.getContent() != null){
+        ContentTypeEnum contentType =  contentService.getContentType(newPostDTO.getContent());
+        if(contentType != null){
             ContentModel newContent = ContentModel.builder()
-                    .type(newPostDTO.getContentType())
-                    .link(contentService.uploadContent(newPostDTO.getContent()))
-                    .build();
+                                                  .type(contentType)
+                                                  .link(contentService.uploadContent(newPostDTO.getContent()))
+                                                  .build();
             ContentModel dbContent = contentService.createContent(newContent);
             newPost.setContentId(dbContent.getId());
         }
+
         return postRepo.save(newPost);
     }
 
     public PostModel getPostById(String postId,String loggedInUserId) {
-       PostModel dbPost = postRepo.findByIdAndUserId(postId, loggedInUserId).orElse(null);
+        PostModel dbPost = postRepo.findByIdAndUserId(postId, loggedInUserId).orElse(null);
         if(dbPost != null)
             return dbPost;
         else
@@ -58,12 +61,12 @@ public class PostService {
         if(postModel == null) return null;
 
         PostResponseDTO resPost = PostResponseDTO.builder()
-                .id(postModel.getId())
-                .user(userDetailsService.loadUserByUserId(postModel.getUserId()))
-                .description(postModel.getDescription())
-                .votes(voteService.getVoteCountByPost(postModel.getId()))
-                .isPublished(postModel.isPublished())
-                .build();
+                                                 .id(postModel.getId())
+                                                 .user(userDetailsService.loadUserByUserId(postModel.getUserId()))
+                                                 .description(postModel.getDescription())
+                                                 .votes(voteService.getVoteCountByPost(postModel.getId()))
+                                                 .isPublished(postModel.isPublished())
+                                                 .build();
 
         if(postModel.getContentId() != null){
             ContentModel dbContent = contentService.getContentById(postModel.getContentId());
@@ -76,12 +79,12 @@ public class PostService {
         VoteModel dbVote =voteService.getVoteByPostIdAndUserId(postId, userId);
         if(dbVote == null) {
             VoteModel newVote = VoteModel.builder()
-                    .voteType(voteType)
-                    .userId(userId)
-                    .postId(postId)
-                    .build();
-             voteService.createVote(newVote);
-             return "Vote Created";
+                                         .voteType(voteType)
+                                         .userId(userId)
+                                         .postId(postId)
+                                         .build();
+            voteService.createVote(newVote);
+            return "Vote Created";
         }
         if(dbVote.getVoteType() == voteType){
             voteService.deleteVote(dbVote.getId());
@@ -92,7 +95,7 @@ public class PostService {
         }
 
     }
-@Transactional
+    @Transactional
     public void deletePostById(String postId,String userId) {
         PostModel dbPost = postRepo.findByIdAndUserId(postId, userId).get();
 
@@ -124,27 +127,27 @@ public class PostService {
         if(updatePost.getDescription() != null)
             dbPost.setDescription(updatePost.getDescription());
 
-        if(updatePost.getContent() != null && updatePost.getContentType() != null
-        ){
+        if(updatePost.getContent() == null) return postRepo.save(dbPost);
+
+        ContentTypeEnum contentType =  contentService.getContentType(updatePost.getContent());
+
+        if(contentType != null){
             if(dbPost.getContentId() != null)
-                 contentService.deleteById(dbPost.getContentId());
+                contentService.deleteById(dbPost.getContentId());
 
             ContentModel newContent = ContentModel.builder()
-                    .type(updatePost.getContentType())
-                    .link(contentService.uploadContent(updatePost.getContent()))
-                    .build();
+                                                  .type(contentType)
+                                                  .link(contentService.uploadContent(updatePost.getContent()))
+                                                  .build();
             ContentModel dbContent = contentService.createContent(newContent);
             dbPost.setContentId(dbContent.getId());
-
-        }else if(updatePost.getContent() == null
-                && updatePost.getContentType() == null
-                && dbPost.getContentId() == null
-        ){
-            // System.out.println(updatePost.getContent() + " "+updatePost.getContentType());
-
-            contentService.deleteById(dbPost.getContentId());
-            dbPost.setContentId(null);
+        }else{
+            if(dbPost.getContentId() != null){
+                contentService.deleteById(dbPost.getContentId());
+                dbPost.setContentId(null);
+            }
         }
+
         return postRepo.save(dbPost);
     }
     public CommentModel createComment(CommentModel newComment, String userId){
