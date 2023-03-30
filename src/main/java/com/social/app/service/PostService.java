@@ -138,8 +138,10 @@ public class PostService {
 
         }else if(updatePost.getContent() == null
                 && updatePost.getContentType() == null
-                && dbPost.getContentId() != null
+                && dbPost.getContentId() == null
         ){
+            // System.out.println(updatePost.getContent() + " "+updatePost.getContentType());
+
             contentService.deleteById(dbPost.getContentId());
             dbPost.setContentId(null);
         }
