@@ -31,4 +31,11 @@ public class UserController {
         return userDetailsService.updateUser(user.getId(),userUpdateDTO);
     }
 
+    @GetMapping("user/{username}")
+    public UserDetails getUserDetailsByUserName(@PathVariable String username){
+        System.out.println("hi this is hitting");
+        return userDetailsService.fetchUserDetailsByUsername(username);
+
+    }
+
 }

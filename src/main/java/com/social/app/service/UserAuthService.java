@@ -6,7 +6,6 @@ import com.social.app.dto.response.JwtResponse;
 import com.social.app.dto.response.MessageResponse;
 import com.social.app.enums.RoleTypeEnum;
 import com.social.app.helpers.CloudinaryService;
-import com.social.app.model.ContentModel;
 import com.social.app.model.User;
 import com.social.app.model.UserDetails;
 import com.social.app.repository.UserDetailsRepository;
@@ -21,11 +20,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 @Service
 public class UserAuthService {
@@ -118,6 +115,7 @@ public class UserAuthService {
 
         UserDetails userDetails = new UserDetails(
                 signUpRequest.getName(),
+                signUpRequest.getUsername(),
                 signUpRequest.getAge(),
                 signUpRequest.getGender(),
                 profilePic,

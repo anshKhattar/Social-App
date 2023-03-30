@@ -34,8 +34,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return User;
     }
 
+    public UserDetails fetchUserDetailsByUsername(String username){
+        UserDetails dbUser = userDetailsRepository.findByUsername(username).get();
+        System.out.println(dbUser);
+        return dbUser;
+    }
     public UserDetailsResponseDTO loadUserByUserId(String userId){
-        UserDetails userDetails = userDetailsRepository.findByUserId(userId);
+        UserDetails userDetails = userDetailsRepository.findByUserId(userId).get();
 
         return new UserDetailsResponseDTO(
                 userDetails.getUserId(),
@@ -47,7 +52,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 
     public UserDetails loadUserDetailsByUserId(String userId) {
-        return userDetailsRepository.findByUserId(userId);
+        return userDetailsRepository.findByUserId(userId).get();
     }
 
     public User getUserByUserId(String userId){
@@ -62,7 +67,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public UserDetails updateUser(String userId, UserUpdateDTO userUpdateDTO){
-        UserDetails dbUserDetails = userDetailsRepository.findByUserId(userId);
+        UserDetails dbUserDetails = userDetailsRepository.findByUserId(userId).get();
         if (userUpdateDTO.getAge() != 0){
             dbUserDetails.setAge(userUpdateDTO.getAge());
         }
