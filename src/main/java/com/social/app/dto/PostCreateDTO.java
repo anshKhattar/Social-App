@@ -10,5 +10,4 @@ public class  PostCreateDTO{
     private String id;
     private String description;
     private MultipartFile content;
-    private ContentTypeEnum contentType;
 }

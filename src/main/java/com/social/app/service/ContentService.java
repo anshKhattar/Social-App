@@ -1,5 +1,6 @@
 package com.social.app.service;
 
+import com.social.app.enums.ContentTypeEnum;
 import com.social.app.helpers.CloudinaryService;
 import com.social.app.model.ContentModel;
 import com.social.app.repository.ContentRepo;
@@ -31,5 +32,12 @@ public class ContentService {
                 getContentById(id).getLink()
         );
         contentRepo.deleteById(id);
+    }
+    public ContentTypeEnum getContentType(MultipartFile file){
+        if(file == null || file.getContentType() == null) return null;
+        String contentType = file.getContentType().split("/")[0];
+        if(contentType.equals("image")) return ContentTypeEnum.IMAGE;
+        if(contentType.equals("video")) return ContentTypeEnum.VIDEO;
+        return null;
     }
 }
